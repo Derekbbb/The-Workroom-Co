@@ -27,8 +27,7 @@ if (form) {
       })
       .catch((error) => {
         console.error('Unable to submit meeting request:', error);
-        status.textContent =
-          'We couldn’t send your request. Please email chrissy@theworkroomco.com directly.';
+        status.textContent = 'We couldn’t send your request. Please try again in a moment.';
       })
       .finally(() => {
         submitButton.disabled = false;

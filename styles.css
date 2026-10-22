@@ -651,46 +651,6 @@ textarea {
   line-height: 1.9;
 }
 
-.contact-card {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 22px;
-  border-radius: 8px;
-  background: var(--soil);
-  color: var(--paper);
-}
-
-.contact-initials {
-  display: grid;
-  width: 54px;
-  height: 54px;
-  flex: 0 0 auto;
-  place-items: center;
-  border: 1px solid var(--walnut);
-  border-radius: 50%;
-  color: var(--eucalyptus);
-  font-size: 0.82rem;
-  font-weight: 800;
-}
-
-.contact-card h3 {
-  margin: 0 0 3px;
-  font-size: 0.94rem;
-}
-
-.contact-card p,
-.contact-card a {
-  display: block;
-  margin: 4px 0 0;
-  color: rgba(240, 234, 207, 0.8);
-  font-size: 0.68rem;
-}
-
-.contact-card a:hover {
-  color: var(--paper);
-}
-
 .meeting-card {
   padding: 30px;
   border-radius: 10px;
