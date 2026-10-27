@@ -8,12 +8,6 @@
   force = true
 
 [[redirects]]
-  from = "/crm"
-  to = "/crm/"
-  status = 301
-  force = true
-
-[[redirects]]
   from = "/crm/"
   to = "/crm/index.html"
   status = 200
