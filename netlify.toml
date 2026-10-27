@@ -18,3 +18,9 @@
   status = 200
   force = true
   conditions = { Role = ["admin"] }
+
+[[redirects]]
+  from = "/crm/*"
+  to = "/"
+  status = 302
+  force = true
