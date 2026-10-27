@@ -1,4 +1,28 @@
 const form = document.getElementById('contactForm');
+const adminLogin = document.getElementById('adminLogin');
+const adminCrmLink = document.getElementById('adminCrmLink');
+
+if (adminLogin && adminCrmLink) {
+  window.netlifyIdentityReady?.then((identity) => {
+    if (!identity) return;
+
+    const updateAdminLinks = (user) => {
+      const roles = user?.app_metadata?.roles ?? user?.roles;
+      const isAdmin = Array.isArray(roles) && roles.includes('admin');
+      adminCrmLink.hidden = !isAdmin;
+      adminLogin.hidden = isAdmin;
+    };
+
+    identity.on('init', updateAdminLinks);
+    identity.on('login', (user) => {
+      updateAdminLinks(user);
+      identity.close();
+    });
+    identity.on('logout', () => updateAdminLinks(null));
+    adminLogin.addEventListener('click', () => identity.open('login'));
+    identity.init();
+  });
+}
 
 if (form) {
   form.addEventListener('submit', (event) => {

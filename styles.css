@@ -87,6 +87,31 @@ textarea {
   font-weight: 700;
 }
 
+.admin-login-link,
+.admin-crm-link {
+  padding: 9px 13px;
+  border: 1px solid var(--soil);
+  border-radius: 5px;
+  background: transparent;
+  color: var(--soil);
+  cursor: pointer;
+  font-size: inherit;
+  font-weight: 700;
+}
+
+.admin-login-link:hover,
+.admin-login-link:focus-visible,
+.admin-crm-link:hover,
+.admin-crm-link:focus-visible {
+  background: var(--soil);
+  color: var(--paper);
+}
+
+.admin-login-link[hidden],
+.admin-crm-link[hidden] {
+  display: none;
+}
+
 .site-nav a,
 .site-footer a:not(.brand) {
   transition: color 0.2s ease;
@@ -809,6 +834,11 @@ textarea {
     justify-content: space-between;
     gap: 10px 14px;
     font-size: 0.67rem;
+  }
+
+  .admin-login-link,
+  .admin-crm-link {
+    padding: 7px 10px;
   }
 
   .hero {

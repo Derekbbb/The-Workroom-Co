@@ -1,0 +1,12 @@
+{
+  "name": "the-workroom-co",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^11.1.6",
+    "@netlify/identity": "^2.0.0"
+  }
+}

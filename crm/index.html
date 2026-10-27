@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Recruitment CRM | The Workroom Co.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/crm/crm.css" />
+  </head>
+  <body>
+    <div class="crm-shell">
+      <header class="crm-header">
+        <a class="brand" href="/">
+          <span class="brand-mark" aria-hidden="true">W.</span>
+          <span class="brand-name">The Workroom Co.</span>
+        </a>
+        <div class="crm-header-actions">
+          <a class="crm-home-link" href="/">Back to website</a>
+          <button class="crm-button crm-button-quiet" id="logoutButton" type="button" hidden>Log out</button>
+        </div>
+      </header>
+
+      <main>
+        <section class="crm-access" id="accessPanel" aria-live="polite">
+          <p class="eyebrow">Private workspace</p>
+          <h1>Recruitment CRM</h1>
+          <p id="accessMessage">Checking your admin access…</p>
+          <button class="crm-button crm-button-dark" id="loginButton" type="button" hidden>Admin sign in</button>
+        </section>
+
+        <section class="crm-app" id="crmApp" hidden>
+          <div class="crm-heading">
+            <div>
+              <p class="eyebrow">Private workspace</p>
+              <h1>Recruitment CRM<span>.</span></h1>
+              <p class="crm-lead">Keep client relationships, pipeline stages, and follow-ups in one place.</p>
+            </div>
+            <button class="crm-button crm-button-dark" id="addCompanyButton" type="button">Add a company</button>
+          </div>
+
+          <p class="crm-status" id="crmStatus" role="status" aria-live="polite"></p>
+
+          <section class="crm-stats" aria-label="Pipeline overview">
+            <article><span>Total companies</span><strong id="totalCount">0</strong></article>
+            <article><span>Qualified clients</span><strong id="qualifiedCount">0</strong></article>
+            <article><span>Live clients</span><strong id="liveCount">0</strong></article>
+            <article><span>Follow-ups due</span><strong id="followUpCount">0</strong></article>
+          </section>
+
+          <section class="crm-records" aria-labelledby="recordsHeading">
+            <div class="records-heading">
+              <div>
+                <p class="eyebrow">Quick summary</p>
+                <h2 id="recordsHeading">Company pipeline</h2>
+              </div>
+              <div class="record-filters">
+                <label class="sr-only" for="searchInput">Search companies</label>
+                <input id="searchInput" type="search" placeholder="Search companies" />
+                <label class="sr-only" for="stageFilter">Filter by stage</label>
+                <select id="stageFilter">
+                  <option value="">All stages</option>
+                  <option>Cold Leads</option>
+                  <option>Hot Leads</option>
+                  <option>Qualified Clients</option>
+                  <option>Live Clients</option>
+                </select>
+                <button class="crm-button crm-button-quiet" id="exportButton" type="button">Export CSV</button>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Company</th>
+                    <th scope="col">Stage</th>
+                    <th scope="col">Main contact</th>
+                    <th scope="col">Next follow-up</th>
+                    <th scope="col">Priority</th>
+                    <th scope="col"><span class="sr-only">Actions</span></th>
+                  </tr>
+                </thead>
+                <tbody id="companyRows"></tbody>
+              </table>
+              <p class="empty-state" id="emptyState" hidden>No companies yet. Add one to start building your pipeline.</p>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="company-dialog" id="companyDialog" aria-labelledby="dialogTitle">
+      <form id="companyForm">
+        <div class="dialog-heading">
+          <div>
+            <p class="eyebrow">Company details</p>
+            <h2 id="dialogTitle">Add a company</h2>
+          </div>
+          <button class="dialog-close" id="closeDialogButton" type="button" aria-label="Close form">×</button>
+        </div>
+
+        <div class="form-grid">
+          <label class="form-field form-field-wide">
+            <span>Company / client <b aria-hidden="true">*</b></span>
+            <input name="company" required maxlength="160" />
+          </label>
+          <label class="form-field">
+            <span>Pipeline stage <b aria-hidden="true">*</b></span>
+            <select name="stage" required>
+              <option>Cold Leads</option>
+              <option>Hot Leads</option>
+              <option>Qualified Clients</option>
+              <option>Live Clients</option>
+            </select>
+          </label>
+          <label class="form-field">
+            <span>Priority</span>
+            <select name="priority">
+              <option>Medium</option>
+              <option>High</option>
+              <option>Low</option>
+            </select>
+          </label>
+          <label class="form-field">
+            <span>Industry / sector</span>
+            <input name="industry" maxlength="120" />
+          </label>
+          <label class="form-field">
+            <span>Website</span>
+            <input name="website" type="url" maxlength="300" />
+          </label>
+          <label class="form-field">
+            <span>Location</span>
+            <input name="location" maxlength="160" />
+          </label>
+          <label class="form-field">
+            <span>Company size / sites</span>
+            <input name="companySize" maxlength="120" />
+          </label>
+          <label class="form-field">
+            <span>Relationship status</span>
+            <input name="relationshipStatus" maxlength="80" />
+          </label>
+          <label class="form-field">
+            <span>How we were introduced</span>
+            <input name="introduction" maxlength="200" />
+          </label>
+          <label class="form-field">
+            <span>Relationship owner</span>
+            <input name="relationshipOwner" maxlength="120" />
+          </label>
+          <label class="form-field">
+            <span>Main contact</span>
+            <input name="contactName" maxlength="120" />
+          </label>
+          <label class="form-field">
+            <span>Contact title</span>
+            <input name="contactTitle" maxlength="120" />
+          </label>
+          <label class="form-field">
+            <span>Email</span>
+            <input name="email" type="email" maxlength="254" />
+          </label>
+          <label class="form-field">
+            <span>Phone / WhatsApp</span>
+            <input name="phone" type="tel" maxlength="80" />
+          </label>
+          <label class="form-field form-field-wide">
+            <span>Other key contacts and stakeholders</span>
+            <textarea name="keyContacts" rows="3" maxlength="3000" placeholder="Add department, role, name, decision influence, and contact details as needed."></textarea>
+          </label>
+          <label class="form-field">
+            <span>Source / referral</span>
+            <input name="source" maxlength="200" />
+          </label>
+          <label class="form-field">
+            <span>Last contacted</span>
+            <input name="lastContacted" type="date" />
+          </label>
+          <label class="form-field">
+            <span>Next follow-up</span>
+            <input name="nextFollowUp" type="date" />
+          </label>
+          <label class="form-field">
+            <span>Estimated value / fee</span>
+            <input name="estimatedValue" maxlength="100" />
+          </label>
+          <label class="form-field">
+            <span>Commercial fee / model</span>
+            <input name="commercialFee" maxlength="200" />
+          </label>
+          <label class="form-field form-field-wide">
+            <span>Potential roles / need</span>
+            <textarea name="needs" rows="2" maxlength="1000"></textarea>
+          </label>
+          <label class="form-field form-field-wide">
+            <span>Next action</span>
+            <textarea name="nextAction" rows="2" maxlength="500"></textarea>
+          </label>
+          <label class="form-field form-field-wide">
+            <span>Notes</span>
+            <textarea name="notes" rows="3" maxlength="2000"></textarea>
+          </label>
+          <details class="form-section form-field-wide">
+            <summary>Commercial agreement &amp; service terms</summary>
+            <div class="form-grid">
+              <label class="form-field">
+                <span>Service type</span>
+                <input name="serviceType" maxlength="120" placeholder="Recruitment / RPO / Other" />
+              </label>
+              <label class="form-field">
+                <span>Fee model</span>
+                <input name="feeModel" maxlength="120" placeholder="Fixed fee / % of salary / Other" />
+              </label>
+              <label class="form-field">
+                <span>Agreed fee</span>
+                <input name="agreedFee" maxlength="120" />
+              </label>
+              <label class="form-field">
+                <span>Currency</span>
+                <input name="currency" maxlength="40" placeholder="ZAR / GBP" />
+              </label>
+              <label class="form-field">
+                <span>Invoice trigger</span>
+                <input name="invoiceTrigger" maxlength="160" />
+              </label>
+              <label class="form-field">
+                <span>Payment terms</span>
+                <input name="paymentTerms" maxlength="160" />
+              </label>
+              <label class="form-field">
+                <span>Guarantee / replacement terms</span>
+                <input name="guaranteeTerms" maxlength="300" />
+              </label>
+              <label class="form-field">
+                <span>Checks included</span>
+                <input name="checksIncluded" maxlength="300" />
+              </label>
+              <label class="form-field">
+                <span>Additional checks</span>
+                <input name="additionalChecks" maxlength="300" />
+              </label>
+              <label class="form-field">
+                <span>Reference checks</span>
+                <input name="referenceChecks" maxlength="300" />
+              </label>
+              <label class="form-field">
+                <span>Offer condition</span>
+                <input name="offerCondition" maxlength="300" />
+              </label>
+              <label class="form-field">
+                <span>Exclusivity</span>
+                <input name="exclusivity" maxlength="100" />
+              </label>
+              <label class="form-field">
+                <span>Candidate ownership period</span>
+                <input name="ownershipPeriod" maxlength="100" />
+              </label>
+              <label class="form-field">
+                <span>Contract signed?</span>
+                <select name="contractSigned">
+                  <option value="">Not recorded</option>
+                  <option>Yes</option>
+                  <option>No</option>
+                  <option>Pending</option>
+                </select>
+              </label>
+              <label class="form-field">
+                <span>Agreement date</span>
+                <input name="agreementDate" type="date" />
+              </label>
+              <label class="form-field form-field-wide">
+                <span>Cancellation / refund terms</span>
+                <textarea name="cancellationTerms" rows="2" maxlength="500"></textarea>
+              </label>
+              <label class="form-field form-field-wide">
+                <span>Special conditions</span>
+                <textarea name="specialConditions" rows="2" maxlength="1000"></textarea>
+              </label>
+            </div>
+          </details>
+          <label class="form-field form-field-wide">
+            <span>Recruitment activity / notes</span>
+            <textarea name="activityNotes" rows="4" maxlength="3000" placeholder="Date, role or vacancy, hiring manager, status, search notes, next action, follow-up, and outcome."></textarea>
+          </label>
+        </div>
+
+        <p class="privacy-note">Keep notes relevant to the business relationship. Avoid storing sensitive personal information you do not need.</p>
+        <p class="dialog-error" id="dialogError" role="alert"></p>
+        <div class="dialog-actions">
+          <button class="crm-button crm-button-quiet" id="cancelDialogButton" type="button">Cancel</button>
+          <button class="crm-button crm-button-dark" id="saveCompanyButton" type="submit">Save company</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script defer src="/identity-loader.js"></script>
+    <script defer src="/crm/crm.js"></script>
+  </body>
+</html>
