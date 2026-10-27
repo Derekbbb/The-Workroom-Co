@@ -11,6 +11,20 @@
   from = "/crm"
   to = "/crm/"
   status = 301
+  force = true
+
+[[redirects]]
+  from = "/crm/"
+  to = "/crm/index.html"
+  status = 200
+  force = true
+  conditions = { Role = ["admin"] }
+
+[[redirects]]
+  from = "/crm/"
+  to = "/"
+  status = 302
+  force = true
 
 [[redirects]]
   from = "/crm/*"
