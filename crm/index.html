@@ -156,26 +156,6 @@
             <input name="relationshipOwner" maxlength="120" />
           </label>
           <label class="form-field">
-            <span>Main contact</span>
-            <input name="contactName" maxlength="120" />
-          </label>
-          <label class="form-field">
-            <span>Contact title</span>
-            <input name="contactTitle" maxlength="120" />
-          </label>
-          <label class="form-field">
-            <span>Email</span>
-            <input name="email" type="email" maxlength="254" />
-          </label>
-          <label class="form-field">
-            <span>Phone / WhatsApp</span>
-            <input name="phone" type="tel" maxlength="80" />
-          </label>
-          <label class="form-field form-field-wide">
-            <span>Other key contacts and stakeholders</span>
-            <textarea name="keyContacts" rows="3" maxlength="3000" placeholder="Add department, role, name, decision influence, and contact details as needed."></textarea>
-          </label>
-          <label class="form-field">
             <span>Source / referral</span>
             <input name="source" maxlength="200" />
           </label>
@@ -283,6 +263,10 @@
                 <span>Special conditions</span>
                 <textarea name="specialConditions" rows="2" maxlength="1000"></textarea>
               </label>
+              <label class="form-field form-field-wide">
+                <span>Non-standard terms (different from our normal terms)</span>
+                <textarea name="customTerms" rows="4" maxlength="4000"></textarea>
+              </label>
             </div>
           </details>
           <label class="form-field form-field-wide">
@@ -298,6 +282,77 @@
           <button class="crm-button crm-button-dark" id="saveCompanyButton" type="submit">Save company</button>
         </div>
       </form>
+    </dialog>
+
+    <dialog class="company-dialog detail-dialog" id="detailDialog" aria-labelledby="detailTitle">
+      <div class="dialog-heading">
+        <div>
+          <p class="eyebrow" id="detailStage">Company</p>
+          <h2 id="detailTitle"></h2>
+        </div>
+        <button class="dialog-close" id="closeDetailButton" type="button" aria-label="Close company">×</button>
+      </div>
+      <p class="dialog-error" id="detailError" role="alert"></p>
+
+      <div class="detail-actions">
+        <button class="crm-button crm-button-quiet" id="detailEditButton" type="button">Edit company details</button>
+      </div>
+
+      <section class="detail-section">
+        <h3>Company overview</h3>
+        <dl class="detail-grid" id="detailOverview"></dl>
+      </section>
+
+      <section class="detail-section">
+        <div class="detail-section-heading">
+          <h3>People at this company</h3>
+          <button class="crm-button crm-button-dark" id="addPersonButton" type="button">Add a person</button>
+        </div>
+        <form class="person-form" id="personForm" hidden>
+          <div class="form-grid">
+            <label class="form-field">
+              <span>Name <b aria-hidden="true">*</b></span>
+              <input name="name" required maxlength="120" autocomplete="off" />
+            </label>
+            <label class="form-field">
+              <span>Title at the company</span>
+              <input name="title" maxlength="120" autocomplete="off" />
+            </label>
+            <label class="form-field">
+              <span>Phone / WhatsApp</span>
+              <input name="phone" type="tel" maxlength="80" autocomplete="off" />
+            </label>
+            <label class="form-field">
+              <span>Email</span>
+              <input name="email" type="email" maxlength="254" autocomplete="off" />
+            </label>
+            <label class="form-field form-field-wide">
+              <span>Notes</span>
+              <textarea name="notes" rows="2" maxlength="500"></textarea>
+            </label>
+          </div>
+          <div class="dialog-actions">
+            <button class="crm-button crm-button-quiet" id="cancelPersonButton" type="button">Cancel</button>
+            <button class="crm-button crm-button-dark" id="savePersonButton" type="submit">Save person</button>
+          </div>
+        </form>
+        <ul class="people-list" id="peopleList"></ul>
+        <p class="empty-state" id="peopleEmpty" hidden>No people added yet. Add the contacts you deal with at this company.</p>
+      </section>
+
+      <section class="detail-section">
+        <h3>Commercial terms</h3>
+        <dl class="detail-grid" id="detailTerms"></dl>
+        <form id="termsForm">
+          <label class="form-field form-field-wide">
+            <span>Non-standard terms (anything different from our normal terms)</span>
+            <textarea name="customTerms" rows="5" maxlength="4000" placeholder="For example: reduced fee for senior roles, 60-day payment terms, extended guarantee period."></textarea>
+          </label>
+          <div class="dialog-actions">
+            <button class="crm-button crm-button-dark" id="saveTermsButton" type="submit">Save terms</button>
+          </div>
+        </form>
+      </section>
     </dialog>
 
     <script defer src="/identity-loader.js"></script>

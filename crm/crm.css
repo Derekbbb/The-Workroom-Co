@@ -600,3 +600,150 @@ td:first-child {
     grid-column: 1;
   }
 }
+
+.company-link {
+  padding: 8px 0;
+  border: 0;
+  background: transparent;
+  color: var(--soil);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-color: rgba(53, 46, 42, 0.35);
+  text-underline-offset: 3px;
+  touch-action: manipulation;
+}
+
+.company-link:hover,
+.company-link:focus-visible {
+  text-decoration-color: currentColor;
+}
+
+.detail-dialog {
+  width: min(860px, calc(100% - 28px));
+  padding: 28px;
+}
+
+.company-dialog.detail-dialog form {
+  padding: 0;
+}
+
+.detail-actions {
+  margin-bottom: 8px;
+}
+
+.detail-section {
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+
+.detail-section h3 {
+  margin: 0 0 14px;
+  font-size: 1.05rem;
+  letter-spacing: -0.03em;
+}
+
+.detail-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.detail-section-heading h3 {
+  margin: 0;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 24px;
+  margin: 0 0 18px;
+}
+
+.detail-grid div {
+  min-width: 0;
+}
+
+.detail-grid dt {
+  color: var(--muted);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.detail-grid dd {
+  margin: 3px 0 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  font-size: 0.85rem;
+}
+
+.detail-grid .empty-state {
+  grid-column: 1 / -1;
+  padding: 8px 0;
+  text-align: left;
+}
+
+.person-form {
+  margin-bottom: 16px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.company-dialog.detail-dialog .person-form {
+  padding: 16px;
+}
+
+.people-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.person-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.person-card strong {
+  font-size: 0.95rem;
+}
+
+.person-line {
+  display: block;
+  margin-top: 3px;
+  overflow-wrap: anywhere;
+  font-size: 0.8rem;
+}
+
+.person-card .row-actions button,
+.detail-actions .crm-button,
+.detail-section-heading .crm-button {
+  min-height: 40px;
+}
+
+@media (max-width: 640px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-dialog {
+    padding: 22px 18px;
+  }
+}

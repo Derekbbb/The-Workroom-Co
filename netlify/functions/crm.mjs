@@ -13,11 +13,6 @@ const fields = {
   companySize: 120,
   relationshipStatus: 80,
   introduction: 200,
-  contactName: 120,
-  contactTitle: 120,
-  email: 254,
-  phone: 80,
-  keyContacts: 3000,
   source: 200,
   needs: 1000,
   relationshipOwner: 120,
@@ -43,10 +38,13 @@ const fields = {
   cancellationTerms: 500,
   contractSigned: 40,
   specialConditions: 1000,
+  customTerms: 4000,
   agreementDate: 10,
   activityNotes: 3000,
   notes: 2000,
 };
+const personFields = { name: 120, title: 120, phone: 80, email: 254, notes: 500 };
+const maxPeople = 50;
 let crmStore;
 
 function getCrmStore() {
@@ -86,6 +84,27 @@ function isValidDate(value) {
   return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
 }
 
+function validatePeople(input) {
+  if (input === undefined) return [];
+  if (!Array.isArray(input) || input.length > maxPeople) return null;
+
+  const people = [];
+  for (const entry of input) {
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return null;
+    const person = {};
+    for (const [field, maxLength] of Object.entries(personFields)) {
+      const value = entry[field] ?? '';
+      if (typeof value !== 'string' || value.length > maxLength) return null;
+      person[field] = value.trim();
+    }
+    if (!person.name) return null;
+    if (person.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(person.email)) return null;
+    person.id = getRecordKey(entry.id) ? entry.id : crypto.randomUUID();
+    people.push(person);
+  }
+  return people;
+}
+
 function validateRecord(input) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) return null;
 
@@ -99,7 +118,10 @@ function validateRecord(input) {
   if (!record.company || !stages.includes(record.stage)) return null;
   if (!priorities.includes(record.priority)) return null;
   if (!isValidDate(record.lastContacted) || !isValidDate(record.nextFollowUp) || !isValidDate(record.agreementDate)) return null;
-  if (record.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(record.email)) return null;
+
+  const people = validatePeople(input.people);
+  if (!people) return null;
+  record.people = people;
 
   return record;
 }
@@ -133,7 +155,7 @@ export default async (request) => {
 
       const record = validateRecord(payload);
       if (!record) {
-        return jsonResponse({ error: 'Check the required company, stage, priority, date, and email fields.' }, 400);
+        return jsonResponse({ error: 'Check the company name, stage, priority, dates, and the name and email of each person.' }, 400);
       }
 
       if (request.method === 'POST') {

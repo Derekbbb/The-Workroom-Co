@@ -21,11 +21,6 @@ const fields = [
   'companySize',
   'relationshipStatus',
   'introduction',
-  'contactName',
-  'contactTitle',
-  'email',
-  'phone',
-  'keyContacts',
   'source',
   'needs',
   'relationshipOwner',
@@ -51,10 +46,18 @@ const fields = [
   'cancellationTerms',
   'contractSigned',
   'specialConditions',
+  'customTerms',
   'agreementDate',
   'activityNotes',
   'notes',
 ];
+
+const detailDialog = document.getElementById('detailDialog');
+const personForm = document.getElementById('personForm');
+const termsForm = document.getElementById('termsForm');
+const detailError = document.getElementById('detailError');
+let detailId = null;
+let editingPersonId = null;
 
 let currentUser = null;
 let records = [];
@@ -121,6 +124,10 @@ function formatDate(value) {
   return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(new Date(year, month - 1, day));
 }
 
+function peopleOf(record) {
+  return Array.isArray(record?.people) ? record.people : [];
+}
+
 function renderRows() {
   const search = document.getElementById('searchInput').value.trim().toLowerCase();
   const stage = document.getElementById('stageFilter').value;
@@ -128,8 +135,7 @@ function renderRows() {
     .filter((record) => !stage || record.stage === stage)
     .filter((record) => !search || [
       record.company,
-      record.contactName,
-      record.email,
+      ...peopleOf(record).flatMap((person) => [person.name, person.email, person.title]),
       record.industry,
       record.needs,
       record.nextAction,
@@ -138,9 +144,9 @@ function renderRows() {
 
   companyRows.innerHTML = visibleRecords.map((record) => `
     <tr>
-      <td>${escapeHtml(record.company)}<span class="company-secondary">${escapeHtml(record.industry)}</span></td>
+      <td><button class="company-link" type="button" data-open="${escapeHtml(record.id)}">${escapeHtml(record.company)}</button><span class="company-secondary">${escapeHtml(record.industry)}</span></td>
       <td><span class="stage-pill">${escapeHtml(record.stage)}</span></td>
-      <td>${escapeHtml(record.contactName || '—')}<span class="company-secondary">${escapeHtml(record.email)}</span></td>
+      <td>${escapeHtml(peopleOf(record)[0]?.name || '—')}<span class="company-secondary">${escapeHtml(peopleOf(record).length > 1 ? `+${peopleOf(record).length - 1} more` : peopleOf(record)[0]?.email || '')}</span></td>
       <td>${escapeHtml(formatDate(record.nextFollowUp))}<span class="company-secondary">${escapeHtml(record.nextAction)}</span></td>
       <td><span class="priority-pill ${record.priority === 'High' ? 'priority-high' : ''}">${escapeHtml(record.priority)}</span></td>
       <td>
@@ -194,6 +200,12 @@ function openDialog(record) {
   companyForm.elements.namedItem('company').focus();
 }
 
+function formatContacts(record) {
+  return peopleOf(record)
+    .map((person) => [person.name, person.title && `(${person.title})`, person.phone, person.email].filter(Boolean).join(' '))
+    .join('; ');
+}
+
 function downloadCsv() {
   const headers = [
     ['Company / Client', 'company'],
@@ -204,11 +216,6 @@ function downloadCsv() {
     ['Company Size / Sites', 'companySize'],
     ['Relationship Status', 'relationshipStatus'],
     ['How We Were Introduced', 'introduction'],
-    ['Main Contact', 'contactName'],
-    ['Job Title', 'contactTitle'],
-    ['Email', 'email'],
-    ['Phone / WhatsApp', 'phone'],
-    ['Other Key Contacts', 'keyContacts'],
     ['Source / Referral', 'source'],
     ['Open Roles / Need', 'needs'],
     ['Relationship Owner', 'relationshipOwner'],
@@ -235,6 +242,8 @@ function downloadCsv() {
     ['Contract Signed', 'contractSigned'],
     ['Agreement Date', 'agreementDate'],
     ['Special Conditions', 'specialConditions'],
+    ['Non-standard Terms', 'customTerms'],
+    ['Contacts', 'contacts'],
     ['Recruitment Activity / Notes', 'activityNotes'],
     ['Notes', 'notes'],
   ];
@@ -245,7 +254,7 @@ function downloadCsv() {
   };
   const csv = [
     headers.map(([label]) => escapeCell(label)).join(','),
-    ...records.map((record) => headers.map(([, field]) => escapeCell(record[field])).join(',')),
+    ...records.map((record) => headers.map(([, field]) => escapeCell(field === 'contacts' ? formatContacts(record) : record[field])).join(',')),
   ].join('\r\n');
   const url = URL.createObjectURL(new Blob(['\uFEFF', csv], { type: 'text/csv;charset=utf-8' }));
   const link = document.createElement('a');
@@ -254,6 +263,180 @@ function downloadCsv() {
   link.click();
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
+
+const overviewFields = [
+  ['Industry / sector', 'industry'],
+  ['Website', 'website'],
+  ['Location', 'location'],
+  ['Company size / sites', 'companySize'],
+  ['Relationship status', 'relationshipStatus'],
+  ['How we were introduced', 'introduction'],
+  ['Relationship owner', 'relationshipOwner'],
+  ['Source / referral', 'source'],
+  ['Last contacted', 'lastContacted', formatDate],
+  ['Next follow-up', 'nextFollowUp', formatDate],
+  ['Next action', 'nextAction'],
+  ['Potential roles / need', 'needs'],
+  ['Estimated value / fee', 'estimatedValue'],
+  ['Notes', 'notes'],
+  ['Recruitment activity', 'activityNotes'],
+];
+const termFields = [
+  ['Service type', 'serviceType'],
+  ['Fee model', 'feeModel'],
+  ['Agreed fee', 'agreedFee'],
+  ['Currency', 'currency'],
+  ['Invoice trigger', 'invoiceTrigger'],
+  ['Payment terms', 'paymentTerms'],
+  ['Guarantee / replacement', 'guaranteeTerms'],
+  ['Checks included', 'checksIncluded'],
+  ['Additional checks', 'additionalChecks'],
+  ['Reference checks', 'referenceChecks'],
+  ['Offer condition', 'offerCondition'],
+  ['Exclusivity', 'exclusivity'],
+  ['Candidate ownership period', 'ownershipPeriod'],
+  ['Cancellation / refund', 'cancellationTerms'],
+  ['Contract signed', 'contractSigned'],
+  ['Agreement date', 'agreementDate', formatDate],
+  ['Special conditions', 'specialConditions'],
+  ['Commercial fee / model', 'commercialFee'],
+];
+
+function renderDefinitions(record, definitions, emptyText) {
+  const rows = definitions
+    .filter(([, key]) => record[key])
+    .map(([label, key, format]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(format ? format(record[key]) : record[key])}</dd></div>`);
+  return rows.length ? rows.join('') : `<p class="empty-state">${escapeHtml(emptyText)}</p>`;
+}
+
+function renderDetail() {
+  const record = records.find((item) => item.id === detailId);
+  if (!record) {
+    detailDialog.close();
+    return;
+  }
+
+  document.getElementById('detailTitle').textContent = record.company;
+  document.getElementById('detailStage').textContent = `${record.stage} · ${record.priority} priority`;
+  document.getElementById('detailOverview').innerHTML = renderDefinitions(record, overviewFields, 'No company details yet. Use “Edit company details” to add them.');
+  document.getElementById('detailTerms').innerHTML = renderDefinitions(record, termFields, 'No standard terms recorded yet. Use “Edit company details” to add them.');
+  termsForm.elements.namedItem('customTerms').value = record.customTerms || '';
+
+  const people = peopleOf(record);
+  document.getElementById('peopleEmpty').hidden = people.length > 0;
+  document.getElementById('peopleList').innerHTML = people.map((person) => `
+    <li class="person-card">
+      <div>
+        <strong>${escapeHtml(person.name)}</strong>
+        ${person.title ? `<span class="company-secondary">${escapeHtml(person.title)}</span>` : ''}
+        ${person.phone ? `<span class="person-line">Phone: ${escapeHtml(person.phone)}</span>` : ''}
+        ${person.email ? `<span class="person-line">Email: ${escapeHtml(person.email)}</span>` : ''}
+        ${person.notes ? `<span class="person-line">${escapeHtml(person.notes)}</span>` : ''}
+      </div>
+      <div class="row-actions">
+        <button type="button" data-edit-person="${escapeHtml(person.id)}">Edit</button>
+        <button type="button" data-remove-person="${escapeHtml(person.id)}">Remove</button>
+      </div>
+    </li>
+  `).join('');
+}
+
+function openDetail(id) {
+  detailId = id;
+  detailError.textContent = '';
+  closePersonForm();
+  renderDetail();
+  if (!detailDialog.open) detailDialog.showModal();
+}
+
+function openPersonForm(person) {
+  personForm.reset();
+  editingPersonId = person?.id || null;
+  for (const name of ['name', 'title', 'phone', 'email', 'notes']) {
+    personForm.elements.namedItem(name).value = person?.[name] || '';
+  }
+  personForm.hidden = false;
+  personForm.elements.namedItem('name').focus();
+}
+
+function closePersonForm() {
+  personForm.hidden = true;
+  personForm.reset();
+  editingPersonId = null;
+}
+
+function recordPayload(record, changes) {
+  return {
+    ...Object.fromEntries(fields.map((field) => [field, record[field] || ''])),
+    people: peopleOf(record),
+    ...changes,
+  };
+}
+
+async function saveDetail(changes, successMessage) {
+  const record = records.find((item) => item.id === detailId);
+  detailError.textContent = '';
+  try {
+    records = await requestApi('PUT', recordPayload(record, changes), record.id);
+    renderRows();
+    renderDetail();
+    setStatus(successMessage);
+    return true;
+  } catch (error) {
+    detailError.textContent = error.message;
+    return false;
+  }
+}
+
+document.getElementById('closeDetailButton').addEventListener('click', () => detailDialog.close());
+document.getElementById('detailEditButton').addEventListener('click', () => {
+  const record = records.find((item) => item.id === detailId);
+  if (record) openDialog(record);
+});
+document.getElementById('addPersonButton').addEventListener('click', () => openPersonForm());
+document.getElementById('cancelPersonButton').addEventListener('click', closePersonForm);
+
+document.getElementById('peopleList').addEventListener('click', async (event) => {
+  const record = records.find((item) => item.id === detailId);
+  const editButton = event.target.closest('[data-edit-person]');
+  const removeButton = event.target.closest('[data-remove-person]');
+
+  if (editButton) {
+    openPersonForm(peopleOf(record).find((person) => person.id === editButton.dataset.editPerson));
+  }
+
+  if (removeButton) {
+    const person = peopleOf(record).find((item) => item.id === removeButton.dataset.removePerson);
+    if (!person || !window.confirm(`Remove ${person.name} from ${record.company}?`)) return;
+    await saveDetail({ people: peopleOf(record).filter((item) => item.id !== person.id) }, `${person.name} was removed.`);
+  }
+});
+
+personForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const record = records.find((item) => item.id === detailId);
+  const person = Object.fromEntries(['name', 'title', 'phone', 'email', 'notes'].map((name) => [
+    name,
+    personForm.elements.namedItem(name).value.trim(),
+  ]));
+  const people = peopleOf(record);
+  const updated = editingPersonId
+    ? people.map((item) => (item.id === editingPersonId ? { ...person, id: item.id } : item))
+    : [...people, { ...person, id: crypto.randomUUID() }];
+
+  const button = document.getElementById('savePersonButton');
+  button.disabled = true;
+  if (await saveDetail({ people: updated }, `${person.name} was saved.`)) closePersonForm();
+  button.disabled = false;
+});
+
+termsForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const button = document.getElementById('saveTermsButton');
+  button.disabled = true;
+  await saveDetail({ customTerms: termsForm.elements.namedItem('customTerms').value.trim() }, 'Non-standard terms saved.');
+  button.disabled = false;
+});
 
 async function handleUser(user) {
   identityReady = true;
@@ -296,6 +479,9 @@ companyRows.addEventListener('click', async (event) => {
   const editButton = event.target.closest('[data-edit]');
   const deleteButton = event.target.closest('[data-delete]');
 
+  const openButton = event.target.closest('[data-open]');
+  if (openButton) openDetail(openButton.dataset.open);
+
   if (editButton) {
     const record = records.find((item) => item.id === editButton.dataset.edit);
     if (record) openDialog(record);
@@ -323,11 +509,13 @@ companyForm.addEventListener('submit', async (event) => {
     field,
     companyForm.elements.namedItem(field).value.trim(),
   ]));
+  record.people = peopleOf(records.find((item) => item.id === editingId));
 
   try {
     records = await requestApi(editingId ? 'PUT' : 'POST', record, editingId);
     companyDialog.close();
     renderRows();
+    if (editingId && detailDialog.open) renderDetail();
     setStatus(editingId ? 'Company details updated.' : 'Company added to the pipeline.');
   } catch (error) {
     dialogError.textContent = error.message;
