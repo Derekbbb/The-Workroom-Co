@@ -97,6 +97,8 @@ textarea {
   cursor: pointer;
   font-size: inherit;
   font-weight: 700;
+  min-height: 44px;
+  touch-action: manipulation;
 }
 
 .admin-login-link:hover,
