@@ -3,25 +3,38 @@ const adminLogin = document.getElementById('adminLogin');
 const adminCrmLink = document.getElementById('adminCrmLink');
 
 if (adminLogin && adminCrmLink) {
-  window.netlifyIdentityReady?.then((identity) => {
-    if (!identity) return;
+  let identityBound;
 
-    const updateAdminLinks = (user) => {
-      const roles = user?.app_metadata?.roles ?? user?.roles;
-      const isAdmin = Array.isArray(roles) && roles.includes('admin');
-      adminCrmLink.hidden = !isAdmin;
-      adminLogin.hidden = isAdmin;
-    };
+  const setupIdentity = () => {
+    identityBound ??= window.loadNetlifyIdentity().then((identity) => {
+      if (!identity) return null;
 
-    identity.on('init', updateAdminLinks);
-    identity.on('login', (user) => {
-      updateAdminLinks(user);
-      identity.close();
+      const updateAdminLinks = (user) => {
+        const roles = user?.app_metadata?.roles ?? user?.roles;
+        const isAdmin = Array.isArray(roles) && roles.includes('admin');
+        adminCrmLink.hidden = !isAdmin;
+        adminLogin.hidden = isAdmin;
+      };
+
+      identity.on('init', updateAdminLinks);
+      identity.on('login', (user) => {
+        updateAdminLinks(user);
+        identity.close();
+      });
+      identity.on('logout', () => updateAdminLinks(null));
+      identity.init();
+      return identity;
     });
-    identity.on('logout', () => updateAdminLinks(null));
-    adminLogin.addEventListener('click', () => identity.open('login'));
-    identity.init();
+    return identityBound;
+  };
+
+  adminLogin.hidden = false;
+  adminLogin.addEventListener('click', () => {
+    setupIdentity().then((identity) => identity?.open('login'));
   });
+
+  // A returning admin already has a stored session, so restore their CRM button.
+  if (localStorage.getItem('gotrue.user')) setupIdentity();
 }
 
 if (form) {
