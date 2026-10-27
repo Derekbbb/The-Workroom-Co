@@ -196,11 +196,6 @@ textarea {
   font-weight: 700;
 }
 
-.text-link span {
-  padding-left: 5px;
-  color: var(--olive);
-}
-
 .hero-note {
   position: relative;
   display: flex;
@@ -220,14 +215,6 @@ textarea {
 
 .hero-note > * {
   transform: rotate(-2deg);
-}
-
-.note-mark {
-  position: absolute;
-  top: 26px;
-  right: 42px;
-  color: var(--paper);
-  font-size: 2rem;
 }
 
 .note-kicker {
@@ -723,17 +710,9 @@ textarea {
 }
 
 .contact-footer {
-  display: flex;
   grid-column: 1 / -1;
-  align-items: center;
-  gap: 14px;
   padding-top: 22px;
   border-top: 1px solid var(--line);
-}
-
-.contact-footer span {
-  color: var(--walnut);
-  font-size: 1.5rem;
 }
 
 .contact-footer p {
@@ -966,10 +945,6 @@ textarea {
 
   .meeting-card {
     padding: 22px 18px;
-  }
-
-  .contact-footer {
-    align-items: flex-start;
   }
 
   .site-footer {
