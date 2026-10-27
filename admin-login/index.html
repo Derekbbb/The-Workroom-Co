@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Admin login | The Workroom Co.</title>
+    <style>
+      body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #efe9d2; color: #352e2a; font-family: "Manrope", "Segoe UI", sans-serif; text-align: center; }
+      main { padding: 24px; }
+      a, button { display: inline-block; margin-top: 16px; padding: 14px 22px; border: 1px solid #352e2a; border-radius: 5px; background: transparent; color: inherit; font: inherit; font-weight: 700; cursor: pointer; text-decoration: none; min-height: 44px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Admin login</h1>
+      <p id="status">Loading sign-in…</p>
+      <button id="open" type="button" hidden>Open login</button>
+      <br />
+      <a href="/">Back to the website</a>
+    </main>
+    <script src="/identity-loader.js"></script>
+    <script>
+      const status = document.getElementById('status');
+      const openButton = document.getElementById('open');
+      window.loadNetlifyIdentity().then((identity) => {
+        if (!identity) {
+          status.textContent = 'Sign-in could not load. Please check your connection and refresh.';
+          return;
+        }
+        const goToCrm = () => { location.href = '/crm/'; };
+        identity.on('login', goToCrm);
+        identity.on('close', () => { status.textContent = 'Sign-in closed.'; openButton.hidden = false; });
+        openButton.addEventListener('click', () => identity.open('login'));
+        identity.init();
+        if (identity.currentUser()) {
+          goToCrm();
+        } else {
+          status.textContent = '';
+          identity.open('login');
+        }
+      });
+    </script>
+  </body>
+</html>
